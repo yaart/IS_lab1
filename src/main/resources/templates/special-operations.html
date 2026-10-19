@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru" th:replace="~{layout :: html(head=~{::head-content}, view=~{::#main-content})}">
+<head>
+    <th:block th:fragment="head-content">
+        <title>Специальные операции</title>
+    </th:block>
+</head>
+<body>
+    <div id="main-content">
+        <h2 class="mb-4">Специальные операции</h2>
+
+        <div class="row g-4">
+            <!-- Op 1: Count by impactSpeed equal -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <strong>1.</strong> Количество объектов с impactSpeed = заданному
+                    </div>
+                    <div class="card-body">
+                        <div class="input-group mb-3">
+                            <input type="number" class="form-control" id="op1-value" placeholder="impactSpeed" step="any">
+                            <button class="btn btn-primary" onclick="executeOp1()">Выполнить</button>
+                        </div>
+                        <div id="op1-result" class="alert alert-info d-none mb-0"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Op 2: Count by weaponType less than -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <strong>2.</strong> Количество объектов с weaponType меньше заданного
+                    </div>
+                    <div class="card-body">
+                        <div class="input-group mb-3">
+                            <select class="form-select" id="op2-value">
+                                <option value="PISTOL">PISTOL</option>
+                                <option value="KNIFE">KNIFE</option>
+                                <option value="BAT">BAT</option>
+                            </select>
+                            <button class="btn btn-primary" onclick="executeOp2()">Выполнить</button>
+                        </div>
+                        <div id="op2-result" class="alert alert-info d-none mb-0"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Op 3: Count by impactSpeed greater than -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <strong>3.</strong> Количество объектов с impactSpeed больше заданного
+                    </div>
+                    <div class="card-body">
+                        <div class="input-group mb-3">
+                            <input type="number" class="form-control" id="op3-value" placeholder="impactSpeed" step="any">
+                            <button class="btn btn-primary" onclick="executeOp3()">Выполнить</button>
+                        </div>
+                        <div id="op3-result" class="alert alert-info d-none mb-0"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Op 4: Delete heroes without toothpick -->
+            <div class="col-md-6">
+                <div class="card border-danger">
+                    <div class="card-header bg-danger text-white">
+                        <strong>4.</strong> Удалить всех героев без зубочисток
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted small">Удаляет всех реальных героев (realHero=true), у которых нет зубочистки.</p>
+                        <button class="btn btn-danger" onclick="executeOp4()">Выполнить удаление</button>
+                        <div id="op4-result" class="alert alert-info d-none mt-2 mb-0"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Op 5: Transfer heroes to Lada Kalina -->
+            <div class="col-md-6">
+                <div class="card border-warning">
+                    <div class="card-header bg-warning">
+                        <strong>5.</strong> Пересадить героев без машины на Lada Kalina
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted small">Пересаживает всех героев без автомобиля на красные "Lada Kalina".</p>
+                        <button class="btn btn-warning" onclick="executeOp5()">Выполнить</button>
+                        <div id="op5-result" class="alert alert-info d-none mt-2 mb-0"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

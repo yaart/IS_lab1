@@ -1,0 +1,360 @@
+\documentclass[14pt,a4paper]{extarticle}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[russian]{babel}
+\usepackage{geometry}
+\geometry{top=2cm, bottom=2cm, left=2.5cm, right=2cm}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage{tikz}
+\usepackage{pgf-umlcd}
+\onehalfspacing
+
+\lstset{
+    basicstyle=\footnotesize\ttfamily,
+    breaklines=true,
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny,
+    tabsize=2,
+    captionpos=b,
+    showstringspaces=false,
+    language=Java,
+    keywordstyle=\color{blue},
+    stringstyle=\color{red},
+    commentstyle=\color{gray},
+}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=blue,
+}
+
+% UML styling
+\renewcommand{\umltextcolor}{black}
+\renewcommand{\umldrawcolor}{black}
+\renewcommand{\umlfillcolor}{white}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    {\scshape\large Министерство науки и высшего образования Российской Федерации\par}
+    \vspace{0.3cm}
+    {\scshape\large Университет ИТМО\par}
+    \vspace{0.3cm}
+    {\scshape\large Факультет программной инженерии и компьютерной техники\par}
+    \vspace{2cm}
+
+    {\Large\bfseries Информационные системы\par}
+    \vspace{0.5cm}
+    {\Large\bfseries Лабораторная работа №~1\par}
+    \vspace{0.5cm}
+    {\large Разработка информационной системы для управления объектами\par}
+    \vspace{0.3cm}
+    {\large класса \texttt{HumanBeing}\par}
+
+    \vspace{3cm}
+    \begin{flushright}
+        \begin{tabular}{rl}
+            \textbf{Исполнитель:} & Ясаков~А. \\[0.3cm]
+            \textbf{Преподаватель:} & Кобик~Н.\,А. \\
+        \end{tabular}
+    \end{flushright}
+
+    \vfill
+    {\large Санкт-Петербург\par}
+    {\large 2026\par}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+%============================================================
+\section{Текст задания}
+
+Реализовать информационную систему, которая позволяет взаимодействовать с объектами класса \texttt{HumanBeing}.
+
+\subsection{Описание классов предметной области}
+
+\begin{lstlisting}[language=Java]
+public class HumanBeing {
+    private Integer id;          // not null, >0, unique, auto-generated
+    private String name;         // not null, not empty
+    private Coordinates coordinates; // not null
+    private java.time.LocalDateTime creationDate; // not null, auto-generated
+    private boolean realHero;
+    private boolean hasToothpick;
+    private Car car;             // nullable
+    private Mood mood;           // nullable
+    private float impactSpeed;   // max 738
+    private WeaponType weaponType; // not null
+}
+
+public class Coordinates {
+    private Float x;             // not null, max 256
+    private float y;             // > -533
+}
+
+public class Car {
+    private String name;         // nullable
+}
+
+public enum Mood {
+    SADNESS, APATHY, CALM, FRENZY;
+}
+
+public enum WeaponType {
+    PISTOL, KNIFE, BAT;
+}
+\end{lstlisting}
+
+\subsection{Требования к функционалу}
+
+\begin{enumerate}[leftmargin=*]
+    \item CRUD-операции в отдельных интерфейсах: создание, получение по ID (с выводом связанных объектов), обновление, удаление.
+    \item При создании — возможность связать объект с существующими \texttt{Coordinates} и \texttt{Car}.
+    \item Все операции на серверной стороне, синхронизация с БД.
+    \item Главный экран: таблица со всеми атрибутами, пагинация.
+    \item Фильтрация и сортировка по строковым колонкам (только полное совпадение).
+    \item Переход к редактированию из таблицы и из области детального просмотра.
+    \item Real-time синхронизация между клиентами при добавлении/изменении/удалении.
+    \item При удалении — проверка связанных объектов, отмена с сообщением при наличии связей.
+    \item Информативные сообщения об ошибках валидации.
+\end{enumerate}
+
+\subsection{Специальные операции}
+
+\begin{enumerate}[leftmargin=*]
+    \item Количество объектов с \texttt{impactSpeed} равным заданному.
+    \item Количество объектов с \texttt{weaponType} меньше заданного.
+    \item Количество объектов с \texttt{impactSpeed} больше заданного.
+    \item Удалить всех героев без зубочисток.
+    \item Пересадить всех героев без машины на красные «Lada Kalina».
+\end{enumerate}
+Спецоперации реализуются в бизнес-логике без прямого использования функций и процедур БД.
+
+\subsection{Требования к хранению и технологиям}
+
+\begin{itemize}[leftmargin=*]
+    \item СУБД: PostgreSQL, БД \texttt{studs}, хост \texttt{pg}.
+    \item Все ограничения полей — на уровне ORM и БД. ID генерируется средствами БД.
+    \item Меню для навигации между логическими частями системы.
+    \item Стек: Spring Boot, JPA + Hibernate, разделение на слои.
+\end{itemize}
+
+\newpage
+%============================================================
+\section{UML-диаграммы}
+
+\subsection{Диаграмма классов}
+
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}
+  \begin{class}[text width=5.5cm]{HumanBeing}{0,0}
+    \attribute{- id : Integer}
+    \attribute{- name : String}
+    \attribute{- coordinates : Coordinates}
+    \attribute{- creationDate : LocalDateTime}
+    \attribute{- realHero : boolean}
+    \attribute{- hasToothpick : boolean}
+    \attribute{- car : Car}
+    \attribute{- mood : Mood}
+    \attribute{- impactSpeed : float}
+    \attribute{- weaponType : WeaponType}
+  \end{class}
+
+  \begin{class}[text width=3.5cm]{Coordinates}{-6,-7}
+    \attribute{- id : Long}
+    \attribute{- x : Float}
+    \attribute{- y : float}
+  \end{class}
+
+  \begin{class}[text width=2.5cm]{Car}{3,-7}
+    \attribute{- id : Long}
+    \attribute{- name : String}
+  \end{class}
+
+  \begin{class}[text width=2.5cm]{Mood}{-9,-3}
+    \operation{<<enum>>}
+    \attribute{SADNESS}
+    \attribute{APATHY}
+    \attribute{CALM}
+    \attribute{FRENZY}
+  \end{class}
+
+  \begin{class}[text width=2.5cm]{WeaponType}{6,-3}
+    \operation{<<enum>>}
+    \attribute{PISTOL}
+    \attribute{KNIFE}
+    \attribute{BAT}
+  \end{class}
+
+  \draw[umlcd style, ->] (HumanBeing) -- node[above,sloped] {1} node[below,sloped] {*} (Coordinates);
+  \draw[umlcd style, ->] (HumanBeing) -- node[above,sloped] {0..1} node[below,sloped] {*} (Car);
+  \draw[umlcd style, ->, dashed] (HumanBeing) -- (Mood);
+  \draw[umlcd style, ->, dashed] (HumanBeing) -- (WeaponType);
+\end{tikzpicture}
+\caption{Диаграмма классов предметной области}
+\end{figure}
+
+\newpage
+\subsection{Диаграмма пакетов}
+
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}[node distance=1.2cm, auto,
+  pkg/.style={rectangle, draw, minimum width=4cm, minimum height=0.8cm, font=\ttfamily\small},
+  layer/.style={rectangle, draw, dashed, minimum width=13cm, minimum height=2.8cm, fill=gray!5, label={[font=\bfseries]above:#1}}]
+
+  % Layers
+  \node[layer=Presentation] (pres) at (0,0) {};
+
+  \node[layer=Business] (bus) at (0,-4) {};
+
+  \node[layer=Persistence] (per) at (0,-8) {};
+
+  % Packages
+  \node[pkg] (ctrl) at (-4,0.3) {controller};
+  \node[pkg] (ws) at (4,0.3) {websocket};
+  \node[pkg] (dto) at (0,0.3) {dto};
+
+  \node[pkg] (svc) at (-3.5,-3.7) {service};
+  \node[pkg] (spec) at (1,-3.7) {specification};
+  \node[pkg] (map) at (5,-3.7) {mapper};
+
+  \node[pkg] (repo) at (-2,-7.7) {repository};
+  \node[pkg] (ent) at (3,-7.7) {entity};
+
+  % Arrows between layers
+  \draw[->, thick] (-6,-1.2) -- node[right] {} (-6,-2.8);
+  \draw[->, thick] (-6,-5.2) -- node[right] {} (-6,-6.8);
+
+\end{tikzpicture}
+\caption{Диаграмма пакетов приложения}
+\end{figure}
+
+\vspace{0.5cm}
+
+\textbf{Описание пакетов:}
+
+\begin{itemize}[leftmargin=*]
+    \item \texttt{controller} — REST-контроллеры (\texttt{HumanBeingController}, \texttt{ReferenceController}, \texttt{SpecialOperationsController}).
+    \item \texttt{dto/request} — входные DTO с Bean Validation (\texttt{HumanBeingRequest}, \texttt{CoordinatesRequest}, \texttt{CarRequest}).
+    \item \texttt{service} — бизнес-логика (\texttt{HumanBeingService}, \texttt{CoordinatesService}, \texttt{CarService}).
+    \item \texttt{repository} — Spring Data JPA репозитории.
+    \item \texttt{entity} — JPA-сущности и перечисления (\texttt{HumanBeing}, \texttt{Coordinates}, \texttt{Car}, \texttt{Mood}, \texttt{WeaponType}).
+    \item \texttt{mapper} — преобразование DTO в сущности.
+    \item \texttt{specification} — динамические фильтры через \texttt{JpaSpecificationExecutor}.
+    \item \texttt{websocket} — STOMP-брокер, события \texttt{EntityChangedEvent}, transactional listeners.
+    \item \texttt{config} — конфигурация WebSocket.
+    \item \texttt{exception} — глобальный обработчик исключений, кастомные исключения.
+\end{itemize}
+
+\newpage
+%============================================================
+\section{Исходный код}
+
+Исходный код проекта доступен в репозитории GitHub:
+
+\url{https://github.com/yaart/IS_lab1}
+
+\subsection{Стек технологий}
+\begin{itemize}
+    \item \textbf{Backend:} Java 17, Spring Boot 3.4.4, Spring Data JPA, Hibernate, Spring WebSocket
+    \item \textbf{Frontend:} React 18, Vite, Material UI (MUI), STOMP over WebSocket
+    \item \textbf{База данных:} PostgreSQL 18 (docker-compose), хост \texttt{pg}, БД \texttt{studs}
+    \item \textbf{Сборка:} Maven (backend), Vite (frontend)
+\end{itemize}
+
+\subsection{Структура проекта}
+\begin{lstlisting}[language=,basicstyle=\footnotesize\ttfamily]
+is-lab1-spring/
+  pom.xml
+  docker-compose.yml
+  src/main/java/com/example/islab1/
+    IsLab1Application.java
+    config/WebSocketConfig.java
+    controller/
+      SpaController.java
+      api/
+        HumanBeingController.java
+        ReferenceController.java
+        SpecialOperationsController.java
+    dto/request/
+      CarRequest.java
+      CoordinatesRequest.java
+      HumanBeingRequest.java
+    entity/
+      Car.java, Coordinates.java, HumanBeing.java
+      Mood.java, WeaponType.java
+    exception/
+      ApiErrorResponse.java, BusinessException.java
+      GlobalExceptionHandler.java, ResourceNotFoundException.java
+      ValidationErrorResponse.java
+    mapper/HumanBeingMapper.java
+    repository/
+      CarRepository.java, CoordinatesRepository.java
+      HumanBeingRepository.java
+    service/
+      CarService.java, CoordinatesService.java
+      HumanBeingService.java
+    specification/HumanBeingSpecification.java
+    websocket/
+      ChangeType.java, EntityChangedEvent.java
+      EntityChangedListener.java, EntityChangePublisher.java
+  src/main/resources/
+    application.yml, application-dev.yml
+  frontend/
+    src/App.jsx
+    src/components/
+      HumansTable.jsx, HumanDialog.jsx
+      SpecialOps.jsx, ConfirmDialog.jsx
+    src/api.js, src/websocket.js, src/theme.js
+\end{lstlisting}
+
+\subsection{Схема базы данных}
+\begin{lstlisting}[language=SQL]
+CREATE TABLE coordinates (
+    id BIGSERIAL PRIMARY KEY,
+    x FLOAT NOT NULL CHECK (x <= 256),
+    y FLOAT NOT NULL CHECK (y > -533)
+);
+
+CREATE TABLE car (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(255)
+);
+
+CREATE TABLE human_being (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL CHECK (char_length(trim(name)) > 0),
+    coordinates_id BIGINT NOT NULL REFERENCES coordinates(id),
+    creation_date TIMESTAMP NOT NULL,
+    real_hero BOOLEAN NOT NULL DEFAULT FALSE,
+    has_toothpick BOOLEAN NOT NULL DEFAULT FALSE,
+    car_id BIGINT REFERENCES car(id),
+    mood VARCHAR(20),
+    impact_speed FLOAT CHECK (impact_speed <= 738),
+    weapon_type VARCHAR(20) NOT NULL
+);
+\end{lstlisting}
+
+\newpage
+%============================================================
+\section{Выводы}
+
+В ходе выполнения лабораторной работы была разработана информационная система для управления объектами класса \texttt{HumanBeing}. Система реализует полный набор CRUD-операций, фильтрацию и сортировку таблицы, real-time синхронизацию между клиентами через WebSocket, пять специальных операций и защиту от некорректного удаления связанных объектов.
+
+Применён трёхслойный архитектурный подход (контроллеры, сервисы, репозитории) с чётким разделением ответственности. Все ограничения полей классов дублированы на уровнях Java-валидации, ORM и базы данных, что обеспечивает целостность данных на всех уровнях приложения.
+
+Для клиентской части использован стек React + Material UI с серверной пагинацией и мгновенным обновлением данных через STOMP-протокол. Навигация между таблицей объектов и специальными операциями реализована через меню с вкладками.
+
+\end{document}

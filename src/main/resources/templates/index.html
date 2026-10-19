@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru" th:replace="~{layout :: html(head=~{::head-content}, view=~{::#main-content})}">
+<head>
+    <th:block th:fragment="head-content">
+        <title>HumanBeing — Список</title>
+    </th:block>
+</head>
+<body>
+    <div id="main-content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">Список HumanBeing</h2>
+            <button class="btn btn-primary" onclick="openCreateModal()">
+                <i class="bi bi-plus-lg"></i> Создать
+            </button>
+        </div>
+
+        <!-- Filters -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label small">Фильтр по имени</label>
+                        <input type="text" class="form-control form-control-sm" id="filter-name" placeholder="Точное совпадение...">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small">Mood</label>
+                        <select class="form-select form-select-sm" id="filter-mood">
+                            <option value="">Все</option>
+                            <option value="SADNESS">SADNESS</option>
+                            <option value="APATHY">APATHY</option>
+                            <option value="CALM">CALM</option>
+                            <option value="FRENZY">FRENZY</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small">WeaponType</label>
+                        <select class="form-select form-select-sm" id="filter-weaponType">
+                            <option value="">Все</option>
+                            <option value="PISTOL">PISTOL</option>
+                            <option value="KNIFE">KNIFE</option>
+                            <option value="BAT">BAT</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small">Машина</label>
+                        <input type="text" class="form-control form-control-sm" id="filter-carName" placeholder="Точное совпадение...">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small">Сортировка</label>
+                        <div class="input-group input-group-sm">
+                            <select class="form-select" id="sort-by">
+                                <option value="id">ID</option>
+                                <option value="name">Имя</option>
+                                <option value="impactSpeed">Impact Speed</option>
+                                <option value="creationDate">Дата создания</option>
+                            </select>
+                            <select class="form-select" id="sort-dir">
+                                <option value="asc">ASC</option>
+                                <option value="desc">DESC</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2 d-flex gap-1">
+                        <button class="btn btn-sm btn-outline-secondary" onclick="applyFilters()">
+                            <i class="bi bi-funnel"></i> Фильтр
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="clearFilters()">
+                            <i class="bi bi-x-lg"></i> Сброс
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="card">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Имя</th>
+                            <th>Coordinates</th>
+                            <th>Дата создания</th>
+                            <th>Real Hero</th>
+                            <th>Toothpick</th>
+                            <th>Машина</th>
+                            <th>Mood</th>
+                            <th>Impact Speed</th>
+                            <th>Weapon</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="humans-tbody">
+                        <tr>
+                            <td colspan="11" class="text-center text-muted py-4">Загрузка...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Pagination -->
+            <div class="card-footer d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted" id="page-info">Страница 0 из 0</span>
+                </div>
+                <nav>
+                    <ul class="pagination pagination-sm mb-0" id="pagination">
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Details Modal -->
+        <div class="modal fade" id="detailsModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">HumanBeing #<span id="detail-id"></span></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body" id="details-body">
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-warning" onclick="editFromDetails()">
+                            <i class="bi bi-pencil"></i> Изменить
+                        </button>
+                        <button class="btn btn-danger" onclick="deleteFromDetails()">
+                            <i class="bi bi-trash"></i> Удалить
+                        </button>
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create/Edit Modal -->
+        <div class="modal fade" id="formModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="form-modal-title">Создать HumanBeing</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="human-form" novalidate>
+                            <input type="hidden" id="edit-id">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Имя *</label>
+                                    <input type="text" class="form-control" id="form-name" required>
+                                    <div class="invalid-feedback">Имя не может быть пустым</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Weapon Type *</label>
+                                    <select class="form-select" id="form-weaponType" required>
+                                        <option value="">Выберите...</option>
+                                        <option value="PISTOL">PISTOL</option>
+                                        <option value="KNIFE">KNIFE</option>
+                                        <option value="BAT">BAT</option>
+                                    </select>
+                                    <div class="invalid-feedback">Тип оружия обязателен</div>
+                                </div>
+                            </div>
+                            <!-- Coordinates -->
+                            <div class="card mb-3">
+                                <div class="card-header py-2">
+                                    <strong>Coordinates</strong>
+                                    <div class="form-check form-switch float-end mb-0">
+                                        <input class="form-check-input" type="checkbox" id="coords-use-existing">
+                                        <label class="form-check-label small">Использовать существующий</label>
+                                    </div>
+                                </div>
+                                <div class="card-body py-2" id="coords-new-fields">
+                                    <div class="row">
+                                        <div class="col">
+                                            <label class="form-label small">X (max 256) *</label>
+                                            <input type="number" class="form-control form-control-sm" id="form-coords-x" step="any">
+                                            <div class="invalid-feedback">X <= 256 и не null</div>
+                                        </div>
+                                        <div class="col">
+                                            <label class="form-label small">Y (> -533)</label>
+                                            <input type="number" class="form-control form-control-sm" id="form-coords-y" step="any" value="0">
+                                            <div class="invalid-feedback">Y > -533</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body py-2 d-none" id="coords-existing-field">
+                                    <input type="number" class="form-control form-control-sm" id="form-coords-existing-id" placeholder="ID существующих координат">
+                                </div>
+                            </div>
+                            <!-- Car -->
+                            <div class="card mb-3">
+                                <div class="card-header py-2">
+                                    <strong>Car</strong> <span class="text-muted small">(опционально)</span>
+                                    <div class="form-check form-switch float-end mb-0">
+                                        <input class="form-check-input" type="checkbox" id="car-use-existing">
+                                        <label class="form-check-label small">Использовать существующий</label>
+                                    </div>
+                                </div>
+                                <div class="card-body py-2" id="car-new-fields">
+                                    <input type="text" class="form-control form-control-sm" id="form-car-name" placeholder="Название машины">
+                                </div>
+                                <div class="card-body py-2 d-none" id="car-existing-field">
+                                    <input type="number" class="form-control form-control-sm" id="form-car-existing-id" placeholder="ID существующей машины">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Mood</label>
+                                    <select class="form-select" id="form-mood">
+                                        <option value="">Нет</option>
+                                        <option value="SADNESS">SADNESS</option>
+                                        <option value="APATHY">APATHY</option>
+                                        <option value="CALM">CALM</option>
+                                        <option value="FRENZY">FRENZY</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Impact Speed (max 738)</label>
+                                    <input type="number" class="form-control" id="form-impactSpeed" step="any" value="0">
+                                    <div class="invalid-feedback">Max 738</div>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Real Hero</label>
+                                    <div class="form-check form-switch mt-2">
+                                        <input class="form-check-input" type="checkbox" id="form-realHero">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Toothpick</label>
+                                    <div class="form-check form-switch mt-2">
+                                        <input class="form-check-input" type="checkbox" id="form-hasToothpick">
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button class="btn btn-primary" onclick="saveHuman()">Сохранить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

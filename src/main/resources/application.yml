@@ -1,0 +1,26 @@
+server:
+  port: 13131
+
+spring:
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+  datasource:
+    url: ${POSTGRES_URL:jdbc:postgresql://pg:5432/studs}
+    username: ${POSTGRES_USERNAME:}
+    password: ${POSTGRES_PASSWORD:}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 3
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: false
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html

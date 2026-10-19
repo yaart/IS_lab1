@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/studs
+    username: myuser
+    password: mypassword
+  jpa:
+    show-sql: true
+server:
+  port: 2721
