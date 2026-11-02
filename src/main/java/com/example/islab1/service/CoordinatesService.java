@@ -22,6 +22,9 @@ public class CoordinatesService {
                     .orElseThrow(() -> new IllegalArgumentException(
                             "Coordinates not found: " + request.getExistingId()));
         }
+        if (request.getX() == null) {
+            throw new IllegalArgumentException("X must not be null");
+        }
         return coordinatesRepository.save(mapper.toCoordinatesEntity(request));
     }
 }

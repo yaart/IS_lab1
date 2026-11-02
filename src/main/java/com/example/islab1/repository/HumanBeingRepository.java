@@ -1,7 +1,6 @@
 package com.example.islab1.repository;
 
 import com.example.islab1.entity.HumanBeing;
-import com.example.islab1.entity.Mood;
 import com.example.islab1.entity.WeaponType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -16,9 +15,13 @@ public interface HumanBeingRepository extends JpaRepository<HumanBeing, Integer>
 
     long countByImpactSpeed(float impactSpeed);
 
+    List<HumanBeing> findByImpactSpeed(float impactSpeed);
+
     long countByWeaponTypeOrderByWeaponType(WeaponType weaponType);
 
     long countByImpactSpeedGreaterThan(float impactSpeed);
+
+    List<HumanBeing> findByImpactSpeedGreaterThan(float impactSpeed);
 
     long countByImpactSpeedLessThan(float impactSpeed);
 
@@ -29,6 +32,8 @@ public interface HumanBeingRepository extends JpaRepository<HumanBeing, Integer>
     List<HumanBeing> findRealHeroesWithoutToothpick();
 
     long countByWeaponTypeIn(List<WeaponType> types);
+
+    List<HumanBeing> findByWeaponTypeIn(List<WeaponType> types);
 
     List<HumanBeing> findByRealHeroTrueAndCarIsNull();
 

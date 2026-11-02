@@ -28,7 +28,10 @@ public class CarService {
     }
 
     public Car getOrCreateLadaKalina() {
-        return carRepository.findByName("Lada Kalina")
-                .orElseGet(() -> carRepository.save(Car.builder().name("Lada Kalina").build()));
+        var cars = carRepository.findAllByName("Lada Kalina");
+        if (!cars.isEmpty()) {
+            return cars.get(0);
+        }
+        return carRepository.save(Car.builder().name("Lada Kalina").build());
     }
 }

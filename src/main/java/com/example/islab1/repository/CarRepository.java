@@ -4,9 +4,9 @@ import com.example.islab1.entity.Car;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import java.util.List;
 
 @Repository
 public interface CarRepository extends JpaRepository<Car, Long> {
-    Optional<Car> findByName(String name);
+    List<Car> findAllByName(String name);
 }

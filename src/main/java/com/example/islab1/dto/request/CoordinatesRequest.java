@@ -7,7 +7,6 @@ import lombok.*;
 public class CoordinatesRequest {
     private Long existingId;
 
-    @NotNull(message = "X must not be null")
     @Max(value = 256, message = "X must be <= 256")
     private Float x;
 

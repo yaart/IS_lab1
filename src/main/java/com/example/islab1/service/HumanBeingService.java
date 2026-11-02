@@ -97,18 +97,26 @@ public class HumanBeingService {
         var coordsId = human.getCoordinates().getId();
         var coordsUsed = repository.countByCoordinatesId(coordsId);
         if (coordsUsed > 1) {
+            var other = repository.findAll().stream()
+                    .filter(h -> h.getCoordinates() != null && h.getCoordinates().getId().equals(coordsId) && !h.getId().equals(id))
+                    .map(h -> "#" + h.getId() + " (" + h.getName() + ")")
+                    .toList();
             throw new BusinessException(
-                "Невозможно удалить объект #" + id + ": его координаты используются " +
-                (coordsUsed) + " объектами. Удалите связанные объекты сначала.");
+                "Невозможно удалить объект #" + id + " (" + human.getName() + "): его координаты (ID: " + coordsId +
+                ") используются другими объектами: " + String.join(", ", other) + ". Удалите или измените их сначала.");
         }
 
         if (human.getCar() != null) {
             var carId = human.getCar().getId();
             var carUsed = repository.countByCarId(carId);
             if (carUsed > 1) {
+                var otherCar = repository.findAll().stream()
+                        .filter(h -> h.getCar() != null && h.getCar().getId().equals(carId) && !h.getId().equals(id))
+                        .map(h -> "#" + h.getId() + " (" + h.getName() + ")")
+                        .toList();
                 throw new BusinessException(
-                    "Невозможно удалить объект #" + id + ": его машина используется " +
-                    (carUsed) + " объектами. Удалите связанные объекты сначала.");
+                    "Невозможно удалить объект #" + id + " (" + human.getName() + "): его машина '" + human.getCar().getName() + "' (ID: " + carId +
+                    ") используются другими объектами: " + String.join(", ", otherCar) + ". Удалите или измените их сначала.");
             }
         }
 
@@ -120,33 +128,40 @@ public class HumanBeingService {
         return repository.findById(id).isPresent();
     }
 
-
-    public long countByImpactSpeed(float impactSpeed) {
-        return repository.countByImpactSpeed(impactSpeed);
+ public List<HumanBeing> findByImpactSpeed(float impactSpeed) {
+        return repository.findByImpactSpeed(impactSpeed);
     }
 
-    public long countByWeaponTypeLessThan(WeaponType weaponType) {
+    public List<HumanBeing> findByWeaponTypeLessThan(WeaponType weaponType) {
         var types = Arrays.stream(WeaponType.values())
                 .filter(w -> w.ordinal() < weaponType.ordinal())
                 .toList();
-        if (types.isEmpty()) return 0;
-        return repository.countByWeaponTypeIn(types);
+        if (types.isEmpty()) return List.of();
+        return repository.findByWeaponTypeIn(types);
     }
 
-    public long countByImpactSpeedGreaterThan(float impactSpeed) {
-        return repository.countByImpactSpeedGreaterThan(impactSpeed);
+    public List<HumanBeing> findByImpactSpeedGreaterThan(float impactSpeed) {
+        return repository.findByImpactSpeedGreaterThan(impactSpeed);
     }
 
-    public int deleteRealHeroesWithoutToothpick() {
+    public List<HumanBeing> getRealHeroesWithoutToothpickList() {
+        return repository.findRealHeroesWithoutToothpick();
+    }
+
+    public List<HumanBeing> getHeroesWithoutCarList() {
+        return repository.findByRealHeroTrueAndCarIsNull();
+    }
+
+    public List<HumanBeing> deleteRealHeroesWithoutToothpickList() {
         var heroes = repository.findRealHeroesWithoutToothpick();
         repository.deleteAll(heroes);
         for (var h : heroes) {
             publisher.publish(h.getId(), ChangeType.DELETED);
         }
-        return heroes.size();
+        return heroes;
     }
 
-    public int transferHeroesToLadaKalina() {
+    public List<HumanBeing> transferHeroesToLadaKalinaList() {
         var lada = carService.getOrCreateLadaKalina();
         var heroes = repository.findByRealHeroTrueAndCarIsNull();
         for (var h : heroes) {
@@ -156,6 +171,6 @@ public class HumanBeingService {
         for (var h : heroes) {
             publisher.publish(h.getId(), ChangeType.UPDATED);
         }
-        return heroes.size();
+        return heroes;
     }
 }
