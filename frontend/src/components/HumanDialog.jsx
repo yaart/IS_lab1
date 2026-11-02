@@ -179,7 +179,7 @@ export default function HumanDialog({ open, editId, onClose, onSave }) {
             </TextField>
           </Grid>
           <Grid item xs={4}>
-            <TextField fullWidth label="Скорость удара" value={s} inputProps={{max:738}} helperText={errs.impactSpeed||""} error={!!errs.impactSpeed}
+            <TextField fullWidth label="Скорость (макс 738)" value={s} inputProps={{max:738}} helperText={errs.impactSpeed||""} error={!!errs.impactSpeed}
               onChange={e => setS(e.target.value)} type="number" size="small" />
           </Grid>
           <Grid item xs={4}>

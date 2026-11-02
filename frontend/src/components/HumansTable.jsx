@@ -33,7 +33,7 @@ export default function HumansTable() {
         filterName: fn, filterMood: fm, filterWeaponType: fw, filterCarName: fc });
       setRows(data.content || []);
       setTotal(data.totalElements || 0);
-    } catch (e) { setSnack({ severity: 'error', text: 'Error' }); }
+    } catch (e) { setSnack({ severity: 'error', text: 'Ошибка загрузки' }); }
     setLoading(false);
   }, [page, pageSize, sortModel, fn, fm, fw, fc]);
 
@@ -42,8 +42,8 @@ export default function HumansTable() {
   const requestDelete = (id) => { setDeleteTarget(id); setConfirmOpen(true); };
   const confirmDelete = async () => {
     setConfirmOpen(false);
-    try { await deleteHuman(deleteTarget); setSnack({ severity: 'success', text: 'Deleted' }); load(); }
-    catch (e) { setSnack({ severity: 'error', text: e.message || 'Error' }); }
+    try { await deleteHuman(deleteTarget); setSnack({ severity: 'success', text: 'Успешно удалено' }); load(); }
+    catch (e) { setSnack({ severity: 'error', text: e.message || 'Ошибка' }); }
   };
 
   const columns = [

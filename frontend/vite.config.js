@@ -9,9 +9,9 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/api': 'http://localhost:14100',
+      '/api': 'http://localhost:13131',
       '/ws': {
-        target: 'ws://localhost:14100',
+        target: 'ws://localhost:13131',
         ws: true,
       },
     },

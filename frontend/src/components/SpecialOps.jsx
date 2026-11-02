@@ -6,7 +6,8 @@ import {
 } from '@mui/material';
 import {
   countByImpactSpeedEqual, countByImpactSpeedGreater,
-  countByWeaponTypeLess, deleteHeroesWithoutToothpick, transferToLada
+  countByWeaponTypeLess, deleteHeroesWithoutToothpick, transferToLada,
+  previewDeleteToothpick, previewTransferLada
 } from '../api';
 
 export default function SpecialOps({ onRefresh }) {
@@ -19,8 +20,12 @@ export default function SpecialOps({ onRefresh }) {
   const [res4, setRes4] = useState(null);
   const [res5, setRes5] = useState(null);
 
-  const result = (r, prefix) =>
-    r !== null ? `${prefix}: ${r.count ?? r.deletedCount ?? r.transferredCount}` : null;
+  const result = (r, prefix) => {
+    if (!r) return null;
+    const count = r.count ?? r.deletedCount ?? r.transferredCount;
+    const items = r.items && r.items.length > 0 ? ` — ${r.items.join(', ')}` : '';
+    return `${prefix}: ${count}${items}`;
+  };
 
   const [confirm, setConfirm] = useState({ open: false, title: '', text: '', action: null });
 
@@ -100,11 +105,13 @@ export default function SpecialOps({ onRefresh }) {
             <CardHeader title="4. Удалить героев без зубочисток"
               titleTypographyProps={{ color: 'error' }} />
             <CardContent>
-              <Button variant="contained" color="error" onClick={() => {
-                setConfirm({ open: true, title: "Удаление героев", text: "Удалить всех героев без зубочисток?", action: "delHeroes" });
+              <Button variant="contained" color="error" onClick={async () => {
+                const list = await previewDeleteToothpick();
+                const names = list.length > 0 ? list.map(h => `#${h.id} (${h.name})`).join(', ') : 'нет объектов';
+                setConfirm({ open: true, title: "Удаление героев", text: `Удалить следующих героев без зубочисток (${list.length}): ${names}?`, action: "delHeroes" });
               }}>Удалить</Button>
               {res4 !== null && <Alert severity="warning" sx={{ mt: 1 }}>
-                Удалено: {res4.deletedCount}
+                {result(res4, 'Удалено')}
               </Alert>}
             </CardContent>
           </Card>
@@ -115,11 +122,13 @@ export default function SpecialOps({ onRefresh }) {
             <CardHeader title="5. Пересадить героев без машины на Lada Kalina"
               titleTypographyProps={{ color: 'warning.main' }} />
             <CardContent>
-              <Button variant="contained" color="warning" onClick={() => {
-                setConfirm({ open: true, title: "Пересадка", text: "Пересадить всех героев без машины на Lada Kalina?", action: "lada" });
+              <Button variant="contained" color="warning" onClick={async () => {
+                const list = await previewTransferLada();
+                const names = list.length > 0 ? list.map(h => `#${h.id} (${h.name})`).join(', ') : 'нет объектов';
+                setConfirm({ open: true, title: "Пересадка", text: `Пересадить следующих героев без машины на Lada Kalina (${list.length}): ${names}?`, action: "lada" });
               }}>Пересадить</Button>
               {res5 !== null && <Alert severity="success" sx={{ mt: 1 }}>
-                Пересажено: {res5.transferredCount}
+                {result(res5, 'Пересажено')}
               </Alert>}
             </CardContent>
           </Card>

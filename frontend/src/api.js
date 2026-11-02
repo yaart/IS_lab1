@@ -53,7 +53,17 @@ export async function deleteHeroesWithoutToothpick() {
   return r.json();
 }
 
+export async function previewDeleteToothpick() {
+  const r = await fetch(`${SPECIAL}/preview-delete-toothpick`);
+  return r.json();
+}
+
 export async function transferToLada() {
   const r = await fetch(`${SPECIAL}/transfer-heroes-to-lada`, { method: 'POST' });
+  return r.json();
+}
+
+export async function previewTransferLada() {
+  const r = await fetch(`${SPECIAL}/preview-transfer-lada`);
   return r.json();
 }
