@@ -1,6 +1,6 @@
 \documentclass[14pt,a4paper]{extarticle}
 \usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
+\usepackage[T2A]{fontenc}
 \usepackage[russian]{babel}
 \usepackage{geometry}
 \geometry{top=2cm, bottom=2cm, left=2.5cm, right=2cm}
@@ -11,8 +11,6 @@
 \usepackage{enumitem}
 \usepackage{titlesec}
 \usepackage{setspace}
-\usepackage{tikz}
-\usepackage{pgf-umlcd}
 \onehalfspacing
 
 \lstset{
@@ -34,43 +32,34 @@
     colorlinks=true,
     linkcolor=black,
     urlcolor=blue,
+    unicode=true,
 }
-
-% UML styling
-\renewcommand{\umltextcolor}{black}
-\renewcommand{\umldrawcolor}{black}
-\renewcommand{\umlfillcolor}{white}
 
 \begin{document}
 
 \begin{titlepage}
     \centering
-    {\scshape\large Министерство науки и высшего образования Российской Федерации\par}
-    \vspace{0.3cm}
-    {\scshape\large Университет ИТМО\par}
-    \vspace{0.3cm}
-    {\scshape\large Факультет программной инженерии и компьютерной техники\par}
-    \vspace{2cm}
+    {\normalsize Федеральное государственное автономное образовательное учреждение высшего образования\\
+    «Национальный исследовательский университет ИТМО»\par}
 
-    {\Large\bfseries Информационные системы\par}
     \vspace{0.5cm}
-    {\Large\bfseries Лабораторная работа №~1\par}
-    \vspace{0.5cm}
-    {\large Разработка информационной системы для управления объектами\par}
-    \vspace{0.3cm}
-    {\large класса \texttt{HumanBeing}\par}
+    {\normalsize Факультет программной инженерии и компьютерной техники\par}
 
-    \vspace{3cm}
+    \vspace{2.5cm}
+    {\Large \textbf{Лабораторная работа №~1\\по дисциплине «Информационные системы»}\par}
+
+    \vspace{0.5cm}
+    {\large Разработка информационной системы для управления объектами класса \texttt{HumanBeing}\par}
+
+    \vspace{4cm}
     \begin{flushright}
-        \begin{tabular}{rl}
-            \textbf{Исполнитель:} & Ясаков~А. \\[0.3cm]
-            \textbf{Преподаватель:} & Кобик~Н.\,А. \\
-        \end{tabular}
+        Выполнил: Ясаков Артем Андреевич\\
+        Группа: P3313\\
+        Проверил: Кобик Никита Алексеевич
     \end{flushright}
 
     \vfill
-    {\large Санкт-Петербург\par}
-    {\large 2026\par}
+    {\normalsize Санкт-Петербург, 2026 г.\par}
 \end{titlepage}
 
 \tableofcontents
@@ -157,52 +146,14 @@ public enum WeaponType {
 
 \begin{figure}[h!]
 \centering
-\begin{tikzpicture}
-  \begin{class}[text width=5.5cm]{HumanBeing}{0,0}
-    \attribute{- id : Integer}
-    \attribute{- name : String}
-    \attribute{- coordinates : Coordinates}
-    \attribute{- creationDate : LocalDateTime}
-    \attribute{- realHero : boolean}
-    \attribute{- hasToothpick : boolean}
-    \attribute{- car : Car}
-    \attribute{- mood : Mood}
-    \attribute{- impactSpeed : float}
-    \attribute{- weaponType : WeaponType}
-  \end{class}
-
-  \begin{class}[text width=3.5cm]{Coordinates}{-6,-7}
-    \attribute{- id : Long}
-    \attribute{- x : Float}
-    \attribute{- y : float}
-  \end{class}
-
-  \begin{class}[text width=2.5cm]{Car}{3,-7}
-    \attribute{- id : Long}
-    \attribute{- name : String}
-  \end{class}
-
-  \begin{class}[text width=2.5cm]{Mood}{-9,-3}
-    \operation{<<enum>>}
-    \attribute{SADNESS}
-    \attribute{APATHY}
-    \attribute{CALM}
-    \attribute{FRENZY}
-  \end{class}
-
-  \begin{class}[text width=2.5cm]{WeaponType}{6,-3}
-    \operation{<<enum>>}
-    \attribute{PISTOL}
-    \attribute{KNIFE}
-    \attribute{BAT}
-  \end{class}
-
-  \draw[umlcd style, ->] (HumanBeing) -- node[above,sloped] {1} node[below,sloped] {*} (Coordinates);
-  \draw[umlcd style, ->] (HumanBeing) -- node[above,sloped] {0..1} node[below,sloped] {*} (Car);
-  \draw[umlcd style, ->, dashed] (HumanBeing) -- (Mood);
-  \draw[umlcd style, ->, dashed] (HumanBeing) -- (WeaponType);
-\end{tikzpicture}
+\includegraphics[width=\textwidth,height=0.88\textheight,keepaspectratio]{is-lab1-spring.png}
 \caption{Диаграмма классов предметной области}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\textwidth,height=0.88\textheight,keepaspectratio]{is-lab1-spring2.png}
+\caption{Диаграмма классов (продолжение)}
 \end{figure}
 
 \newpage
@@ -210,34 +161,7 @@ public enum WeaponType {
 
 \begin{figure}[h!]
 \centering
-\begin{tikzpicture}[node distance=1.2cm, auto,
-  pkg/.style={rectangle, draw, minimum width=4cm, minimum height=0.8cm, font=\ttfamily\small},
-  layer/.style={rectangle, draw, dashed, minimum width=13cm, minimum height=2.8cm, fill=gray!5, label={[font=\bfseries]above:#1}}]
-
-  % Layers
-  \node[layer=Presentation] (pres) at (0,0) {};
-
-  \node[layer=Business] (bus) at (0,-4) {};
-
-  \node[layer=Persistence] (per) at (0,-8) {};
-
-  % Packages
-  \node[pkg] (ctrl) at (-4,0.3) {controller};
-  \node[pkg] (ws) at (4,0.3) {websocket};
-  \node[pkg] (dto) at (0,0.3) {dto};
-
-  \node[pkg] (svc) at (-3.5,-3.7) {service};
-  \node[pkg] (spec) at (1,-3.7) {specification};
-  \node[pkg] (map) at (5,-3.7) {mapper};
-
-  \node[pkg] (repo) at (-2,-7.7) {repository};
-  \node[pkg] (ent) at (3,-7.7) {entity};
-
-  % Arrows between layers
-  \draw[->, thick] (-6,-1.2) -- node[right] {} (-6,-2.8);
-  \draw[->, thick] (-6,-5.2) -- node[right] {} (-6,-6.8);
-
-\end{tikzpicture}
+\includegraphics[width=\textwidth,height=0.88\textheight,keepaspectratio]{package.png}
 \caption{Диаграмма пакетов приложения}
 \end{figure}
 
