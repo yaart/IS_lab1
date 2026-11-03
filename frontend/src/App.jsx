@@ -7,6 +7,10 @@ import SpecialOps from './components/SpecialOps';
 export default function App() {
   const [tab, setTab] = useState(0);
 
+  useEffect(() => {
+    connect();
+  }, []);
+
   return (
     <Box sx={{ minHeight: '100vh' }}>
       <AppBar position="sticky">

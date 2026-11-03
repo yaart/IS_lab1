@@ -3,6 +3,7 @@ import { Box, Button, TextField, MenuItem, Alert, Snackbar, Dialog, DialogTitle,
 import { DataGrid } from '@mui/x-data-grid';
 import AddIcon from '@mui/icons-material/Add';
 import { fetchHumans, deleteHuman } from '../api';
+import { onChange } from '../websocket';
 import HumanDialog from './HumanDialog';
 import ConfirmDialog from './ConfirmDialog';
 
@@ -37,7 +38,21 @@ export default function HumansTable() {
     setLoading(false);
   }, [page, pageSize, sortModel, fn, fm, fw, fc]);
 
-  useEffect(() => { load(); }, [load]);
+  const silentLoad = useCallback(async () => {
+    try {
+      const sb = sortModel[0]?.field || 'id';
+      const sd = sortModel[0]?.sort || 'asc';
+      const data = await fetchHumans({ page, pageSize, sortBy: sb, sortDir: sd,
+        filterName: fn, filterMood: fm, filterWeaponType: fw, filterCarName: fc });
+      setRows(data.content || []);
+      setTotal(data.totalElements || 0);
+    } catch (e) {}
+  }, [page, pageSize, sortModel, fn, fm, fw, fc]);
+
+  useEffect(() => {
+    load();
+    return onChange(() => silentLoad());
+  }, [load, silentLoad]);
 
   const requestDelete = (id) => { setDeleteTarget(id); setConfirmOpen(true); };
   const confirmDelete = async () => {

@@ -1,12 +1,13 @@
 import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 
 let client = null;
 let listeners = [];
 
 export function connect(onConnected) {
   client = new Client({
-    brokerURL: `ws://${window.location.host}/ws`,
-    reconnectDelay: 15000,
+    webSocketFactory: () => new SockJS(`/ws`),
+    reconnectDelay: 5000,
     onConnect: () => {
       client.subscribe('/topic/entities', () => {
         listeners.forEach(fn => fn());
